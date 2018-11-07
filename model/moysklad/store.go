@@ -1,5 +1,7 @@
 package moysklad
 
+const BASE_STORE = "https://online.moysklad.ru/api/remap/1.1/entity/store"
+
 type Store struct {
 	Meta      Meta   `json:"meta"`
 	ID        string `json:"id"`
@@ -24,4 +26,12 @@ type Stores struct {
 	Context Context `json:"context"`
 	Meta    Meta    `json:"meta"`
 	Rows    []Group `json:"rows"`
+}
+
+func GetStores() {
+
+}
+
+func FilterStores() {
+
 }

@@ -2,6 +2,8 @@ package moysklad
 
 import "encoding/json"
 
+const BASE_ASSORTMENT = "https://online.moysklad.ru/api/remap/1.1/entity/assortment"
+
 type Assortment struct {
 	Context Context `json:"context"`
 	Meta    Meta    `json:"meta"`

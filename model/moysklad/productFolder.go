@@ -1,5 +1,7 @@
 package moysklad
 
+const BASE_PRODUCTFOLDER = "https://online.moysklad.ru/api/remap/1.1/entity/productfolder"
+
 // MoySklad ProductFolder type
 type ProductFolder struct {
 	Meta          Meta   `json:"meta"`

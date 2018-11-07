@@ -1,16 +1,14 @@
 package moysklad
 
+const BASE_PRODUCT = "https://online.moysklad.ru/api/remap/1.1/entity/product"
+
 type Product struct {
-	Meta      Meta   `json:"meta"`
-	ID        string `json:"id"`
-	AccountID string `json:"accountId"`
-	Owner     struct {
-		Meta Meta `json:"meta"`
-	} `json:"owner"`
-	Shared bool `json:"shared"`
-	Group  struct {
-		Meta Meta `json:"meta"`
-	} `json:"group"`
+	Meta         Meta   `json:"meta"`
+	ID           string `json:"id"`
+	AccountID    string `json:"accountId"`
+	Owner        Owner  `json:"owner"`
+	Shared       bool   `json:"shared"`
+	Group        Group  `json:"group"`
 	Version      int    `json:"version"`
 	Updated      string `json:"updated"`
 	Name         string `json:"name"`

@@ -1,5 +1,7 @@
 package moysklad
 
+const BASE_VARIANT = "https://online.moysklad.ru/api/remap/1.1/entity/variant"
+
 type Variant struct {
 	Meta            Meta   `json:"meta"`
 	ID              string `json:"id"`

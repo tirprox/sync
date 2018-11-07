@@ -20,6 +20,8 @@ type Context struct {
 	} `json:"employee"`
 }
 
+const BASE_GROUP = "https://online.moysklad.ru/api/remap/1.1/entity/group"
+
 type Group struct {
 	Meta `json:"meta"`
 }
