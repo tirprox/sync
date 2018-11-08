@@ -1,5 +1,10 @@
 package moysklad
 
+import (
+	"encoding/json"
+	"log"
+)
+
 const BASE_PRODUCTFOLDER = "https://online.moysklad.ru/api/remap/1.1/entity/productfolder"
 
 // MoySklad ProductFolder type
@@ -36,4 +41,37 @@ type ProductFolderContainer struct {
 	Other         struct {
 		Products []Product `json:"products"`
 	} `json:"other"`
+}
+
+func GetProductFolders() []ProductFolderContainer {
+
+	responses := GetAll(BASE_PRODUCTFOLDER)
+	productFolderContainers := []ProductFolderContainer{}
+
+	for _, response := range responses {
+
+		productFolders := ProductFolders{}
+		json.Unmarshal(response.Body, &productFolders)
+
+		for _, row := range productFolders.Rows {
+
+			rowJson, err := json.Marshal(&row)
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			container := ProductFolderContainer{}
+			json.Unmarshal(rowJson, &container.ProductFolder)
+			container.Name = container.ProductFolder.Name
+			container.ID = container.ProductFolder.ID
+
+			productFolderContainers = append(productFolderContainers, container)
+		}
+	}
+
+	return productFolderContainers
+}
+
+func FilterProductFolders() {
+
 }

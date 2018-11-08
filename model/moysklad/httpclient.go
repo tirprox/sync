@@ -1,4 +1,4 @@
-package httpclient
+package moysklad
 
 import (
 	"encoding/json"
@@ -23,16 +23,6 @@ type Result struct {
 type Response struct {
 	Index int
 	Body  []byte
-}
-
-type Meta struct {
-	Href      string `json:"href"`
-	Type      string `json:"type"`
-	MediaType string `json:"mediaType"`
-	Size      int    `json:"size"`
-	Limit     int    `json:"limit"`
-	Offset    int    `json:"offset"`
-	NextHref  string `json:"nextHref"`
 }
 
 type GenericApiResponse struct {
@@ -127,9 +117,10 @@ func GetAll(url string) []Response {
 		log.Fatal(err)
 	}
 
-	meta := DecodeMeta(firstResponse.Body)
+	responses := []Response{}
+	responses = append(responses, firstResponse)
 
-	//fmt.Println(reflect.TypeOf(meta.Href))
+	meta := DecodeMeta(firstResponse.Body)
 
 	var urls []string
 
@@ -138,22 +129,20 @@ func GetAll(url string) []Response {
 		urls = append(urls, url+"&"+v)
 	}
 
-	results := boundedParallelGet(urls, 5)
+	if len(urls) > 0 {
+		results := boundedParallelGet(urls, 5)
+		for _, result := range results {
+			index := result.Index + 1
+			body, err := ioutil.ReadAll(result.Res.Body)
+			if err != nil {
+				log.Fatal(err)
+			}
 
-	responses := []Response{}
-
-	responses = append(responses, firstResponse)
-
-	for _, result := range results {
-		index := result.Index + 1
-		body, err := ioutil.ReadAll(result.Res.Body)
-		if err != nil {
-			log.Fatal(err)
+			response := Response{index, body}
+			responses = append(responses, response)
+			defer result.Res.Body.Close()
 		}
 
-		response := Response{index, body}
-		responses = append(responses, response)
-		defer result.Res.Body.Close()
 	}
 
 	return responses
@@ -204,7 +193,7 @@ func makeUrlList(size int) []string {
 	var postfix []string
 
 	//TODO: < size
-	for offset < 500 {
+	for offset < size {
 		postfix = append(postfix, "offset="+strconv.Itoa(offset))
 		offset += limit
 	}
