@@ -7,11 +7,11 @@ type Meta struct {
 	MetadataHref string `json:"metadataHref,omitempty"`
 	Type         string `json:"type,omitempty"`
 	MediaType    string `json:"mediaType,omitempty"`
-	Size         int    `json:"size,omitempty"`
-	Limit        int    `json:"limit,omitempty"`
-	Offset       int    `json:"offset,omitempty"`
-	NextHref     string `json:"nextHref,omitempty"`
-	UUIDHref     string `json:"uuidHref,omitempty"`
+	Size         int    `json:"size,omitempty" bson:"size,omitempty"`
+	Limit        int    `json:"limit,omitempty" bson:"limit,omitempty"`
+	Offset       int    `json:"offset,omitempty" bson:"offset,omitempty"`
+	NextHref     string `json:"nextHref,omitempty" bson:"nextHref,omitempty"`
+	UUIDHref     string `json:"uuidHref,omitempty" bson:"uuidHref,omitempty"`
 }
 
 type Context struct {

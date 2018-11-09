@@ -1,8 +1,7 @@
 package moysklad
 
 import (
-	"encoding/json"
-	"log"
+	"github.com/mitchellh/mapstructure"
 )
 
 const BASE_PRODUCTFOLDER = "https://online.moysklad.ru/api/remap/1.1/entity/productfolder"
@@ -38,40 +37,34 @@ type ProductFolderContainer struct {
 	ID            string        `json:"id"`
 	Name          string        `json:"name"`
 	ProductFolder ProductFolder `json:"productFolder"`
+	Products      []Product     `json:"products"`
 	Other         struct {
-		Products []Product `json:"products"`
 	} `json:"other"`
 }
 
 func GetProductFolders() []ProductFolderContainer {
 
-	responses := GetAll(BASE_PRODUCTFOLDER)
+	data := GetAll(BASE_PRODUCTFOLDER)
+
 	productFolderContainers := []ProductFolderContainer{}
 
-	for _, response := range responses {
+	for _, item := range data {
 
-		productFolders := ProductFolders{}
-		json.Unmarshal(response.Body, &productFolders)
+		folder := ProductFolder{}
+		container := ProductFolderContainer{}
 
-		for _, row := range productFolders.Rows {
+		mapstructure.Decode(item, &folder)
+		container.ProductFolder = folder
+		container.Name = folder.Name
+		container.ID = folder.ID
 
-			rowJson, err := json.Marshal(&row)
-			if err != nil {
-				log.Fatal(err)
-			}
+		productFolderContainers = append(productFolderContainers, container)
 
-			container := ProductFolderContainer{}
-			json.Unmarshal(rowJson, &container.ProductFolder)
-			container.Name = container.ProductFolder.Name
-			container.ID = container.ProductFolder.ID
-
-			productFolderContainers = append(productFolderContainers, container)
-		}
 	}
 
 	return productFolderContainers
 }
 
-func FilterProductFolders() {
-
+func (s ProductFolderContainer) GetName() string {
+	return s.Name
 }

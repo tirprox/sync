@@ -2,11 +2,11 @@ package moysklad
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/tirprox/sync/credentials"
 	"io/ioutil"
 	"log"
 	"net/http"
+	"net/url"
 	"sort"
 	"strconv"
 	"time"
@@ -16,8 +16,9 @@ import (
 // which will be used for sorting the results after they come in
 type Result struct {
 	Index int
-	Res   *http.Response
-	Err   error
+
+	Res *http.Response
+	Err error
 }
 
 type Response struct {
@@ -98,8 +99,7 @@ func boundedParallelGet(urls []string, concurrencyLimit int) []Result {
 	return results
 }
 
-//TODO Return pointer maybe?
-func GetAll(url string) []Response {
+func GetAll(url string) []interface{} {
 
 	res, err := Get(url)
 
@@ -122,12 +122,14 @@ func GetAll(url string) []Response {
 
 	meta := DecodeMeta(firstResponse.Body)
 
-	var urls []string
+	urls := makeUrlList(url, meta.Size)
+
+	/*var urls []string
 
 	for _, v := range makeUrlList(meta.Size) {
 		//TODO: Replace with Query Builder function
 		urls = append(urls, url+"&"+v)
-	}
+	}*/
 
 	if len(urls) > 0 {
 		results := boundedParallelGet(urls, 5)
@@ -145,7 +147,22 @@ func GetAll(url string) []Response {
 
 	}
 
-	return responses
+	var data []interface{}
+
+	for _, response := range responses {
+
+		var result map[string]interface{}
+		json.Unmarshal(response.Body, &result)
+
+		rows := result["rows"].([]interface{})
+		for _, row := range rows {
+			data = append(data, row)
+		}
+		//data = append(data, rows)
+
+	}
+
+	return data
 }
 
 func Get(url string) (*http.Response, error) {
@@ -156,14 +173,13 @@ func Get(url string) (*http.Response, error) {
 var client = &http.Client{Timeout: 60 * time.Second}
 
 func MakeRequest(url string, method string) (res *http.Response, err error) {
-	fmt.Println("Requesting " + url)
+	//fmt.Println("Requesting " + url)
 	req, error1 := http.NewRequest(method, url, nil)
 	if error1 != nil {
 		log.Fatal(err)
 	}
 
 	req.SetBasicAuth(credentials.DreamWhite.Login, credentials.DreamWhite.Password)
-
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("Content-Type", "application/json")
 
@@ -186,18 +202,22 @@ func DecodeMeta(responseBody []byte) *Meta {
 	return &response.Meta
 }
 
-func makeUrlList(size int) []string {
+func makeUrlList(baseUrl string, size int) (urls []string) {
 	offset := 100
 	limit := 100
 
-	var postfix []string
-
-	//TODO: < size
-	for offset < size {
-		postfix = append(postfix, "offset="+strconv.Itoa(offset))
-		offset += limit
+	u, err := url.Parse(baseUrl)
+	if err != nil {
+		log.Fatal(err)
 	}
 
-	return postfix
+	for offset < size {
+		query := u.Query()
+		query.Set("offset", strconv.Itoa(offset))
+		u.RawQuery = query.Encode()
+		urls = append(urls, u.String())
+		offset += limit
+	}
+	return
 
 }

@@ -1,6 +1,12 @@
 package moysklad
 
+import (
+	"github.com/mitchellh/mapstructure"
+)
+
 const BASE_STORE = "https://online.moysklad.ru/api/remap/1.1/entity/store"
+
+var ALLOWED_STORES = []string{"Флигель new", "Арма Мск"}
 
 type Store struct {
 	Meta      Meta   `json:"meta"`
@@ -22,16 +28,29 @@ type Store struct {
 	Address      string `json:"address"`
 }
 
-type Stores struct {
-	Context Context `json:"context"`
-	Meta    Meta    `json:"meta"`
-	Rows    []Group `json:"rows"`
+func GetStores() []Store {
+
+	data := GetAll(BASE_STORE)
+
+	filterable := []Filterable{}
+
+	for _, item := range data {
+
+		store := Store{}
+		mapstructure.Decode(item, &store)
+		filterable = append(filterable, store)
+	}
+
+	filtered := FilterSlice(filterable, ALLOWED_STORES)
+
+	storeSlice := []Store{}
+	for _, item := range filtered {
+		storeSlice = append(storeSlice, item.(Store))
+	}
+
+	return storeSlice
 }
 
-func GetStores() {
-
-}
-
-func FilterStores() {
-
+func (s Store) GetName() string {
+	return s.Name
 }
