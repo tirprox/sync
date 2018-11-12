@@ -44,3 +44,13 @@ type Product struct {
 	InTransit          int      `json:"inTransit"`
 	Quantity           int      `json:"quantity"`
 }
+
+type ProductWrapper struct {
+	ID       string            `json:"id"`
+	Name     string            `json:"name"`
+	Product  Product           `json:"productFolder"`
+	Stock    map[string]string `json:"stock"`
+	Variants []VariantWrapper  `json:"products"`
+	Other    struct {
+	} `json:"other"`
+}

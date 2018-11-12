@@ -33,25 +33,25 @@ type ProductFolders struct {
 	Rows    []ProductFolder `json:"rows"`
 }
 
-type ProductFolderContainer struct {
-	ID            string        `json:"id"`
-	Name          string        `json:"name"`
-	ProductFolder ProductFolder `json:"productFolder"`
-	Products      []Product     `json:"products"`
+type ProductFolderWrapper struct {
+	ID            string           `json:"id"`
+	Name          string           `json:"name"`
+	ProductFolder ProductFolder    `json:"productFolder"`
+	Products      []ProductWrapper `json:"products"`
 	Other         struct {
 	} `json:"other"`
 }
 
-func GetProductFolders() []ProductFolderContainer {
+func GetProductFolders() []ProductFolderWrapper {
 
 	data := GetAll(BASE_PRODUCTFOLDER)
 
-	productFolderContainers := []ProductFolderContainer{}
+	productFolderContainers := []ProductFolderWrapper{}
 
 	for _, item := range data {
 
 		folder := ProductFolder{}
-		container := ProductFolderContainer{}
+		container := ProductFolderWrapper{}
 
 		mapstructure.Decode(item, &folder)
 		container.ProductFolder = folder
@@ -65,6 +65,6 @@ func GetProductFolders() []ProductFolderContainer {
 	return productFolderContainers
 }
 
-func (s ProductFolderContainer) GetName() string {
+func (s ProductFolderWrapper) GetName() string {
 	return s.Name
 }

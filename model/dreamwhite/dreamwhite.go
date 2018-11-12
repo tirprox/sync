@@ -26,50 +26,39 @@ func Import() {
 	folders := moysklad.GetProductFolders()
 
 	fmt.Println("Writing product folders to DB")
-
 	for _, folder := range folders {
-		updateMongoDB(folder, folder.Name, "productFolder")
+		updateMongoDB(toBson(folder), folder.Name, "productFolder")
 	}
 
 	//Requesting stores for cities from config
 	fmt.Println("Requesting stores")
-
 	stores := moysklad.GetStores()
-	fmt.Println("Writing stores to DB")
 
+	fmt.Println("Writing stores to DB")
 	for _, store := range stores {
-		updateMongoDB(store, store.Name, "store")
+		updateMongoDB(toBson(store), store.Name, "store")
 	}
 
 	//TODO Requesting images from static
 
-	//Executing queries and collecting assortment
+	//TODO Executing queries and collecting assortment //TODO Request all productFolders
+
 	fmt.Println("Requesting assortments")
 	assortments := moysklad.GetAssortment(folders[12], stores[0])
+
 	fmt.Println("Writing assortments to DB")
-
 	rewriteCollection(toInterfaceSlice(assortments), "assortment")
-
-	//Parsing assortment and pushing it to a MongoDB
-	products := []moysklad.Product{}
-	variants := []moysklad.Variant{}
 
 	for _, assortment := range assortments {
 		switch assortment.Meta.Type {
 
 		case "product":
-			product := moysklad.Product{}
-			products = append(products, product)
+			updateMongoDB(toBson(assortment), assortment.Name, "product")
 
 		case "variant":
-			variant := moysklad.Variant{}
-			variants = append(variants, variant)
+			updateMongoDB(toBson(assortment), assortment.Name, "variant")
 		}
 	}
-
-	rewriteCollection(toInterfaceSlice(products), "product")
-	rewriteCollection(toInterfaceSlice(variants), "variant")
-
 }
 
 const DATABASE = "go"
@@ -84,9 +73,7 @@ func initMongoConnection() {
 	}
 }
 
-func updateMongoDB(data interface{}, filter string, collection string) {
-
-	col := mongoclient.Client.Database(DATABASE).Collection(collection)
+func toBson(data interface{}) *bson.Document {
 
 	b, err := bsoncodec.Marshal(data)
 	if err != nil {
@@ -98,12 +85,20 @@ func updateMongoDB(data interface{}, filter string, collection string) {
 	if err != nil {
 		log.Fatal("BSON Marshal Error: ", err)
 	}
+	return d
+}
 
-	update := bson.NewDocument(bson.EC.SubDocument("$set", d))
+func updateMongoDB(doc *bson.Document, filter string, collection string) {
+
+	col := mongoclient.Client.Database(DATABASE).Collection(collection)
+
+	update := bson.NewDocument(bson.EC.SubDocument("$set", doc))
 
 	filterDoc := bson.NewDocument(bson.EC.String("name", filter))
 
-	_, err = col.UpdateOne(context.TODO(), filterDoc, update, updateopt.Upsert(true))
+	_, err := col.UpdateOne(context.TODO(), filterDoc, update, updateopt.Upsert(true))
+	if err != nil {
+	}
 }
 
 func toInterfaceSlice(slice interface{}) []interface{} {
@@ -127,4 +122,7 @@ func rewriteCollection(data []interface{}, collection string) {
 	col.Drop(context.TODO())
 
 	col.InsertMany(context.TODO(), data)
+}
+
+type Config struct {
 }

@@ -29,3 +29,7 @@ type Group struct {
 type Owner struct {
 	Meta Meta `json:"meta"`
 }
+
+type Stock struct {
+	Stock map[string]string `json:"stock"`
+}

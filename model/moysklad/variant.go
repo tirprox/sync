@@ -34,3 +34,12 @@ type Variant struct {
 	InTransit int `json:"inTransit"`
 	Quantity  int `json:"quantity"`
 }
+
+type VariantWrapper struct {
+	ID      string            `json:"id"`
+	Name    string            `json:"name"`
+	Variant Variant           `json:"products"`
+	Stock   map[string]string `json:"stock"`
+	Other   struct {
+	} `json:"other"`
+}
