@@ -3,7 +3,6 @@ package main
 import (
 	"bytes"
 	"encoding/json"
-	"github.com/mongodb/mongo-go-driver/mongo"
 	"github.com/tirprox/sync/model/dreamwhite"
 	"log"
 	"os"
@@ -29,7 +28,7 @@ func WriteStructToFileJSON(v interface{}, filename string) {
 	defer newFile.Close()
 }
 
-var Collection *mongo.Collection
+//var Collection *mongo.Collection
 
 func main() {
 	dreamwhite.Import()

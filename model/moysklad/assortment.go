@@ -3,44 +3,41 @@ package moysklad
 import (
 	"encoding/json"
 	"github.com/mitchellh/mapstructure"
+	"github.com/tirprox/sync/model/moysklad/mscodec"
 	"net/url"
 )
 
 const BASE_ASSORTMENT = "https://online.moysklad.ru/api/remap/1.1/entity/assortment"
 
 type Assortment struct {
-	Meta      Meta   `json:"meta"`
-	ID        string `json:"id"`
+	Meta mscodec.Meta `json:"meta"`
+	/*ID        string `json:"id"`
 	AccountID string `json:"accountId"`
-	Owner     struct {
-		Meta Meta `json:"meta"`
-	} `json:"owner,omitempty"`
+	Owner     mscodec.Owner `json:"owner,omitempty"`
 	Shared bool `json:"shared,omitempty"`
-	Group  struct {
-		Meta Meta `json:"meta"`
-	} `json:"group,omitempty"`
+	Group  mscodec.Group `json:"group,omitempty"`
 	Version      int    `json:"version"`
-	Updated      string `json:"updated"`
-	Name         string `json:"name"`
-	Code         string `json:"code"`
+	Updated      string `json:"updated"`*/
+	Name string `json:"name"`
+	/*Code         string `json:"code"`
 	ExternalCode string `json:"externalCode"`
 	Archived     bool   `json:"archived"`
 	PathName     string `json:"pathName,omitempty"`
 	Uom          struct {
-		Meta Meta `json:"meta"`
+		Meta mscodec.Meta `json:"meta"`
 	} `json:"uom,omitempty"`
 	MinPrice   float64 `json:"minPrice,omitempty"`
 	SalePrices []struct {
 		Value    float64 `json:"value"`
 		Currency struct {
-			Meta Meta `json:"meta"`
+			Meta mscodec.Meta `json:"meta"`
 		} `json:"currency"`
 		PriceType string `json:"priceType"`
 	} `json:"salePrices"`
 	BuyPrice struct {
 		Value    float64 `json:"value"`
 		Currency struct {
-			Meta Meta `json:"meta"`
+			Meta mscodec.Meta `json:"meta"`
 		} `json:"currency"`
 	} `json:"buyPrice,omitempty"`
 	Article            string   `json:"article,omitempty"`
@@ -54,14 +51,14 @@ type Assortment struct {
 	InTransit          float64  `json:"inTransit,omitempty"`
 	Quantity           float64  `json:"quantity,omitempty"`
 	Characteristics    []struct {
-		Meta  Meta   `json:"meta"`
+		Meta  mscodec.Meta   `json:"meta"`
 		ID    string `json:"id"`
 		Name  string `json:"name"`
 		Value string `json:"value"`
 	} `json:"characteristics,omitempty"`
 	Product struct {
-		Meta Meta `json:"meta"`
-	} `json:"product,omitempty"`
+		Meta mscodec.Meta `json:"meta"`
+	} `json:"product,omitempty"`*/
 }
 
 func DecodeAssortment(responseBody []byte) Assortment {
@@ -71,7 +68,7 @@ func DecodeAssortment(responseBody []byte) Assortment {
 	return assortment
 }
 
-func GetAssortment(folder ProductFolderWrapper, store Store) []Assortment {
+func GetAssortment(folder ProductFolderWrapper, store Store) []mscodec.Assortment {
 
 	u, err := url.Parse(BASE_ASSORTMENT)
 	if err != nil {
@@ -86,10 +83,10 @@ func GetAssortment(folder ProductFolderWrapper, store Store) []Assortment {
 
 	data := GetAll(u.String())
 
-	assortments := []Assortment{}
+	assortments := []mscodec.Assortment{}
 
 	for _, item := range data {
-		assortment := Assortment{}
+		assortment := mscodec.Assortment{}
 		mapstructure.Decode(item, &assortment)
 		assortments = append(assortments, assortment)
 	}

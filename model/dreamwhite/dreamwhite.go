@@ -8,6 +8,7 @@ import (
 	"github.com/mongodb/mongo-go-driver/mongo"
 	"github.com/mongodb/mongo-go-driver/mongo/updateopt"
 	"github.com/tirprox/sync/model/moysklad"
+	"github.com/tirprox/sync/model/moysklad/mscodec"
 	"github.com/tirprox/sync/mongoclient"
 	"log"
 	"reflect"
@@ -54,6 +55,10 @@ func Import() {
 
 		case "product":
 			updateMongoDB(toBson(assortment), assortment.Name, "product")
+
+			product := mscodec.ToProduct(assortment)
+			fmt.Println("Product name: ", product.Name)
+			//tools.ToJSONFile(product, "output/" + product.Name)
 
 		case "variant":
 			updateMongoDB(toBson(assortment), assortment.Name, "variant")
