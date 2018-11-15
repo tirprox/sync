@@ -26,6 +26,32 @@ type Owner struct {
 	Meta Meta `json:"meta"`
 }
 
+type SalePrices []struct {
+	Value    float64 `json:"value"`
+	Currency struct {
+		Meta Meta `json:"meta"`
+	} `json:"currency"`
+	PriceType string `json:"priceType"`
+}
+
+type BuyPrice struct {
+	Value    float64 `json:"value"`
+	Currency struct {
+		Meta Meta `json:"meta"`
+	} `json:"currency"`
+}
+
+type Characteristics []struct {
+	Meta  Meta   `json:"meta"`
+	ID    string `json:"id"`
+	Name  string `json:"name"`
+	Value string `json:"value"`
+}
+
+type Uom struct {
+	Meta Meta `json:"meta"`
+}
+
 type Stock struct {
 	Stock map[string]string `json:"stock"`
 }

@@ -1,12 +1,18 @@
 package mscodec
 
-import (
-	"github.com/jinzhu/copier"
-)
+import "encoding/json"
 
 func ToProduct(data interface{}) (product Product) {
 
-	copier.Copy(&product, &data)
+	j, err := json.Marshal(data)
+	if err != nil {
+	}
+	json.Unmarshal(j, &product)
 
 	return product
+}
+
+func Encode(data interface{}, entity string) (encoded interface{}) {
+
+	return
 }
